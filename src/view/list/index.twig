@@ -1,0 +1,39 @@
+{% extends 'shared/layout.twig' %}
+{% block title %}StackImages{% endblock %}
+{% block content %}
+    <div class="container" id="listContainer" style="padding-top: 20px;">
+
+    </div>
+
+    <script>
+        $(document).ready(function (){
+            $.ajax({
+                url: "{{url}}/api/invoice/all",
+                type: "GET",
+                headers: {
+                    "Authorization": localStorage.getItem("key")
+                },
+                success: function (response){
+                    for(let i = 0; i < response.length; i++){
+                        let id = response[i].pk_id; //id-ul facturii
+                        
+                        let html = `<div class="row">
+                                    <nav class="teal darken-1">
+                                        <div class="nav-wrapper">
+                                            <div class="col s12">
+                                                <a href="{{url}}/${id}" class="breadcrumb"># <span>Invoice ${id}</span></a>
+                                            </div>
+                                        </div>
+                                    </nav>
+                                </div>`;
+
+                        $("#listContainer").append(html);
+                    }
+                }, //aici incarcam datele primite din ruta
+                error: function(response){
+                    
+                }
+            })
+        });
+    </script>
+{% endblock %}

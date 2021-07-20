@@ -1,0 +1,313 @@
+{% extends 'shared/layout.twig' %}
+{% block title %}StackImages{% endblock %}
+{% block content %}
+    <div class="section no-pad-bot" id="index-banner">
+        <div class="container">
+            <div class="row">
+                <div class="col m7 offset-m5" style="margin-bottom: 20px">
+                    <div class="panel-invoice z-depth-3">
+                        <a id="sendInvoiceButton" class="waves-effect waves-light btn teal darken-1" style="display: none">Send Invoice</a>
+                        <button onclick="sendInvoiceData()" class="waves-effect waves-light btn teal darken-1">Save Invoice</button>
+                        <a id="downloadInvoiceButton" class="waves-effect waves-light btn teal darken-1" style="display: none">Download PDF</a>
+                    </div>
+                </div>
+                <div class="col m12" style="margin-bottom: 100px">
+                    <div class="panel-invoice z-depth-3">
+                        <div class="row">
+                            <div class="col m7">
+                                <div class="row">
+                                    <div class="col m3">
+                                        <img class="invoice-logo" src="https://dummyimage.com/250x175/00897b/fff" />
+                                    </div>
+                                    <div class="col m5 offset-m4">
+                                        <form action="#">
+                                            <div class="file-field input-field">
+                                                <div class="btn teal darken-1">
+                                                    <span>Choose image</span>
+                                                    <input id="imageFileInput" type="file">
+                                                </div>
+                                                <div class="file-path-wrapper">
+                                                    <input class="file-path validate" type="text">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <form class="col s12">
+                                        <div class="row">
+                                            <div class="input-field col s12">
+                                                <textarea id="firma" class="materialize-textarea"></textarea>
+                                                <label for="firma">Who is this invoice from (required)</label>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="row">
+                                    <form class="col s12">
+                                        <div class="row">
+                                            <div class="input-field col s12">
+                                                <textarea id="catrecine" class="materialize-textarea"></textarea>
+                                                <label for="catrecine">Who is this invoice to (required)</label>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="col m5">
+                                <h4 class="right">INVOICE #1</h4>
+
+
+                                <div class="input-field col s12">
+                                    <i class="prefix number-input-icon">#</i>
+                                    <input id="ordernumber" type="text" class="validate">
+                                    <label for="ordernumber">Order no.</label>
+                                </div>
+
+                                <div class="input-field col s12">
+                                    <input id="date" type="text" class="datepicker">
+                                    <label for="date">Date</label>
+                                </div>
+
+                                <div class="input-field col s12">
+                                    <input id="duedate" type="text" class="datepicker">
+                                    <label for="duedate">Due Date</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <nav>
+                                <div class="nav-wrapper teal darken-1">
+                                    <div class="col s6">
+                                        <a href="#!" class="breadcrumb white-text">Item</a>
+                                    </div>
+                                    <div class="col s2">
+                                        <a href="#!" class="breadcrumb white-text">Quantity</a>
+                                    </div>
+                                    <div class="col s2">
+                                        <a href="#!" class="breadcrumb white-text">Price</a>
+                                    </div>
+                                    <div class="col s2">
+                                        <a href="#!" class="breadcrumb white-text">Total Price</a>
+                                    </div>
+                                </div>
+                            </nav>
+
+                        </div>
+                        <div id="product_container">
+                            <button onclick="addProductLine()" class="btn waves-effect waves-light teal darken-1" type="submit" name="action">Add
+                                line
+                            </button>
+                        </div>
+
+                        <div class="row">
+                            <div class="col m4 offset-m8">
+                                <div class="input-field col s12">
+                                    <input id="subtotal" type="text" class="validate" disabled>
+                                </div>
+                                <div class="input-field col s12">
+                                    <input onkeyup="calculTaxa()" id="tax" type="text" class="validate">
+                                    <label for="tax">Tax</label>
+                                </div>
+                                <div class="input-field col s12">
+                                    <input id="finaltotal" type="text" class="validate" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <form class="col s12">
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <textarea id="notes" class="materialize-textarea"></textarea>
+                                        <label for="notes">Notes</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <textarea id="terms" class="materialize-textarea"></textarea>
+                                        <label for="terms">Terms</label>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+
+            
+            $(document).ready(function () {//asta se apeleaza cand pagina a terminat de incarcat datele
+                $('.datepicker').datepicker();
+                addProductLine();
+            });
+
+            function generateRandomId(len){
+                var text = "";
+  
+                var charset = "abcdefghijklmnopqrstuvwxyz0123456789";
+                
+                for (var i = 0; i < len; i++)
+                    text += charset.charAt(Math.floor(Math.random() * charset.length));
+                
+                return text;
+            }
+
+            function addProductLine(){
+
+                let randomid = generateRandomId(10);
+
+                let html = `<div class="row">
+                            <div class="input-field col s6">
+                                <input id="description_${randomid}" type="text" class="descriptionValues validate">
+                            </div>
+                            <div class="input-field col s2">
+                                <input onkeyup="calculatePrice('${randomid}')" id="quantity_${randomid}" type="text" class="quantityValues priceValues validate">
+                            </div>
+                            <div class="input-field col s2">
+                                <input onkeyup="calculatePrice('${randomid}')" id="price_${randomid}" type="text" class="validate">
+                            </div>
+                            <div class="input-field col s2">
+                                <input id="totalprice_${randomid}" type="text" class="totalPriceTracking validate" disabled>
+                            </div>
+                        </div>`;
+
+                $('#product_container').append(html);//htmlul de aici adaug in product_container
+            }
+
+
+            function calculatePrice(id){ //fiecare rand are un   - cantiatea si pretul dintr-o linie
+                let quantity = $(`#quantity_${id}`).val();//#quantity_${id} obiect tip html
+                // # e id in css
+                // . e clasa de css
+                // nimic - apelez tagul cu totul
+                let price = $(`#price_${id}`).val();
+                $(`#totalprice_${id}`).val(quantity * price);
+                
+                calculTaxa();
+            }
+
+            function calculTaxa(){
+                let suma_linii = 0;
+                console.log($(`.totalPriceTracking`))
+                $(`.totalPriceTracking`).each(function() {
+                    suma_linii+=parseInt($(`#${this.id}`).val())    ; //elementul curent
+                });
+                $('#subtotal').val(suma_linii); //val - jquery - preia valoarea dintr-un input
+                let taxa = parseInt($('#tax').val());
+                let finaltotal = (( 100 + taxa) * suma_linii)/100;
+                //100%  250
+                //119   297.5
+                // ----------
+                //250 + 47.5 = 297.5
+                $('#finaltotal').val(finaltotal);
+            }
+
+            let inputList = [];
+
+            $('body').on('change', "#imageFileInput", function(){//preiau din js si upload-am in php
+                console.log("intru aici");
+                for(var i = 0; i < $(this).get(0).files.length; i++){
+                    inputList.push($(this).get(0).files[i]);
+                }
+            });
+
+            function sendInvoiceData(){
+            
+                let firmaValue = $('#firma').val();
+                let catrecineValue  = $('#catrecine').val();
+                let ordernumberValue  = $('#ordernumber').val();
+                let dateValue  =  $('#date').val();
+                let duedateValue  =  $('#duedate').val();
+                let descriptionValue  = $('#description').val();
+                let quantityValue  = $('#quantity').val();
+                let priceValue  = $('#price').val();
+                let totalpiceValue  = $('#totalprice').val();
+                let subtotalValue  = $('#subtotal').val();
+                let taxValue  = $('#tax').val();
+                let finaltotalValue  = $('#finaltotal').val();
+                let notesValue = $('#notes').val();
+                let termsValue = $('#terms').val();
+
+                let lista_descrieri = [];
+                $(`.descriptionValues`).each(function() {
+                    lista_descrieri.push($(`#${this.id}`).val());
+                });
+
+                let lista_preturi = [];
+                $(`.priceValues`).each(function() {
+                    lista_preturi.push($(`#${this.id}`).val());
+                });
+
+                let lista_cantitate = [];
+                $(`.quantityValues`).each(function() {
+                    lista_cantitate.push($(`#${this.id}`).val());
+                });
+
+                let lista_totalPreturi = [];
+                $(`.totalPriceTracking`).each(function() {
+                    lista_totalPreturi.push($(`#${this.id}`).val());
+                });
+
+                let arrayObiecteDeLinii = [];
+                for(let i=0;i<lista_cantitate.length;i++){
+                    arrayObiecteDeLinii.push({//un singur obiect in json
+                        price: lista_preturi[i],
+                        quantity: lista_cantitate[i],
+                        totalpriceValue: lista_totalPreturi[i],
+                        descriptionValue: lista_descrieri[i]
+                        });
+                }
+
+                let data = {
+                        firma: firmaValue,
+                        catrecine: catrecineValue,
+                        ordernumber: ordernumberValue,
+                        date: dateValue,
+                        duedate: duedateValue,
+                        subtotal: subtotalValue,
+                        tax: taxValue,
+                        finaltotal: finaltotalValue,
+                        notes: notesValue,
+                        terms: termsValue,
+                        dateLinii: arrayObiecteDeLinii
+                    };  
+
+                    const formData = new FormData();//container gol
+                    
+                    formData.append("data", JSON.stringify(data));//JSON.stringify(data) - transformarea in string a datelor din json Object, obiectele sunt din data
+
+                    console.log(inputList);
+
+                    inputList.forEach(element => {//foreach versiunea js
+                        formData.append("files[]", element, element.name);//arrayul e asa [] in slim
+                    });//element e imaginea 
+
+                $.ajax({//request ajax - apartine de rest api
+                    url: "{{url}}/api/invoice/create",
+                    type: "POST",
+                    cache: false,
+                    headers: {
+                        "Authorization": localStorage.getItem("key") //aici am bagat keyul in header
+                    },
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+        
+                    //pt mesaje negre in dreapta
+                    success: function(response){//raspuns Dates in invoice table were created din backed pe care l-am scris
+                        M.toast({html: response.message}); //codul ala o executa dupa o secunda
+                        //afiseaza doar raspunsul pe care il trimit eu, in caz de succes
+                        $('#sendInvoiceButton').show();
+                        $('#downloadInvoiceButton').show();
+                    },
+                    error: function(response){
+                        M.toast({html: response.responseJSON.error_message});
+                        //aici apar mai multe mesaje (pt ca esti in caz de eroare, jquery asa interpreteaza)
+                    }
+                });
+            }
+        </script>
+{% endblock %}
